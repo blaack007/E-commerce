@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../store/slices/cartSlice';
 import axiosInstance from '../apis/config';
 
 export default function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
   const [mainImage, setMainImage] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -13,12 +17,34 @@ export default function ProductDetails() {
       .get(`/products/${id}`)
       .then((res) => {
         setProduct(res.data);
-        setMainImage(res.data.images[0]);
+        setMainImage(res.data.thumbnail);
       })
-      .catch((err) => console.log(err));
-  }, [id]);
+      .catch((err) => {
+        console.log(err);
+        navigate('/404');
+      });
+  }, [id, navigate]);
 
-  if (!product) return <div className="container mt-5">Loading...</div>;
+  const handleAddToCart = () => {
+    dispatch(addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.thumbnail,
+      category: product.category,
+      quantity: parseInt(quantity)
+    }));
+  };
+
+  if (!product) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   const {
     title,
@@ -29,93 +55,163 @@ export default function ProductDetails() {
     brand,
     category,
     images,
-    stock,
-    sku
+    stock
   } = product;
 
   const discountedPrice = (price - (price * discountPercentage) / 100).toFixed(2);
 
   const renderStars = () => {
     const fullStars = Math.floor(rating);
-    const halfStar = rating - fullStars >= 0.5;
+    const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     const stars = [];
 
+    // Full stars
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<i key={i} className="bi bi-star-fill text-warning"></i>);
+      stars.push(<i key={`full-${i}`} className="bi bi-star-fill text-warning"></i>);
     }
 
-    if (halfStar) {
+    // Half star (if needed)
+    if (hasHalfStar) {
       stars.push(<i key="half" className="bi bi-star-half text-warning"></i>);
     }
 
-    while (stars.length < 5) {
-      stars.push(<i key={`empty-${stars.length}`} className="bi bi-star text-warning"></i>);
+    // Empty stars
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<i key={`empty-${i}`} className="bi bi-star text-warning"></i>);
     }
 
     return stars;
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container-fluid mt-4">
+      <nav aria-label="breadcrumb">
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item"><Link to="/" className="text-decoration-none">Home</Link></li>
+          <li className="breadcrumb-item"><Link to="/products" className="text-decoration-none">Products</Link></li>
+          <li className="breadcrumb-item active" aria-current="page">{title}</li>
+        </ol>
+      </nav>
+
       <div className="row">
         {/* Product Images */}
         <div className="col-md-6 mb-4">
-          <img src={mainImage} alt={title} className="img-fluid rounded mb-3 product-image" />
-          <div className="d-flex gap-2">
-            {images.map((img, idx) => (
-              <img
-                key={idx}
-                src={img}
-                alt={`Thumbnail ${idx}`}
-                className={`thumbnail rounded ${mainImage === img ? 'border border-primary' : ''}`}
-                style={{ width: '60px', height: '60px', cursor: 'pointer' }}
-                onClick={() => setMainImage(img)}
+          <div className="card border-0">
+            <div className="card-body">
+              <img 
+                src={mainImage} 
+                alt={title} 
+                className="img-fluid rounded mb-3" 
+                style={{ width: '100%', height: '400px', objectFit: 'contain' }}
               />
-            ))}
+              <div className="d-flex gap-2 flex-wrap">
+                {images.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`${title} - Image ${idx + 1}`}
+                    className={`thumbnail rounded cursor-pointer ${mainImage === img ? 'border border-primary' : 'border'}`}
+                    style={{ width: '80px', height: '80px', objectFit: 'cover', cursor: 'pointer' }}
+                    onClick={() => setMainImage(img)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Product Details */}
         <div className="col-md-6">
-          <h2>{title}</h2>
-          <p className="text-muted">SKU: {sku}</p>
+          <div className="card border-0">
+            <div className="card-body">
+              <h2 className="mb-3">{title}</h2>
+              
+              <div className="mb-3">
+                <span className="h3 text-primary me-2">${discountedPrice}</span>
+                {discountPercentage > 0 && (
+                  <>
+                    <span className="text-muted text-decoration-line-through">${price.toFixed(2)}</span>
+                    <span className="badge bg-danger ms-2">-{discountPercentage}%</span>
+                  </>
+                )}
+              </div>
 
-          <div className="mb-3">
-            <span className="h4 me-2 text-primary">${discountedPrice}</span>
-            <span className="text-muted"><s>${price.toFixed(2)}</s></span>
+              <div className="mb-4">
+                {renderStars()}
+                <span className="ms-2 text-muted">({rating.toFixed(1)} rating)</span>
+              </div>
+
+              <p className="mb-4">{description}</p>
+
+              <div className="row mb-4">
+                <div className="col-6">
+                  <p className="mb-1"><strong>Brand:</strong></p>
+                  <p className="text-muted">{brand}</p>
+                </div>
+                <div className="col-6">
+                  <p className="mb-1"><strong>Category:</strong></p>
+                  <p className="text-muted">{category}</p>
+                </div>
+                <div className="col-6">
+                  <p className="mb-1"><strong>Availability:</strong></p>
+                  <p>
+                    <span className={`badge ${stock > 0 ? 'bg-success' : 'bg-danger'}`}>
+                      {stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="quantity" className="form-label">Quantity:</label>
+                <div className="input-group" style={{ width: '140px' }}>
+                  <button 
+                    className="btn btn-outline-secondary" 
+                    type="button"
+                    onClick={() => quantity > 1 && setQuantity(q => q - 1)}
+                  >
+                    <i className="bi bi-dash"></i>
+                  </button>
+                  <input
+                    type="number"
+                    id="quantity"
+                    value={quantity}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (value >= 1 && value <= stock) {
+                        setQuantity(value);
+                      }
+                    }}
+                    className="form-control text-center"
+                    min="1"
+                    max={stock}
+                  />
+                  <button 
+                    className="btn btn-outline-secondary" 
+                    type="button"
+                    onClick={() => quantity < stock && setQuantity(q => q + 1)}
+                  >
+                    <i className="bi bi-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div className="d-flex gap-2">
+                <button 
+                  className="btn btn-primary btn-lg flex-grow-1"
+                  disabled={stock === 0}
+                  onClick={handleAddToCart}
+                >
+                  <i className="bi bi-cart-plus me-2"></i>
+                  Add to Cart
+                </button>
+                <button className="btn btn-outline-primary btn-lg">
+                  <i className="bi bi-heart"></i>
+                </button>
+              </div>
+            </div>
           </div>
-
-          <div className="mb-3">
-            {renderStars()}
-            <span className="ms-2">{rating.toFixed(1)} ({product.reviews?.length || 0} reviews)</span>
-          </div>
-
-          <p className="mb-4">{description}</p>
-
-          <p><strong>Brand:</strong> {brand}</p>
-          <p><strong>Category:</strong> {category}</p>
-          <p><strong>Stock:</strong> {stock}</p>
-
-          <div className="mb-4">
-            <label htmlFor="quantity" className="form-label">Quantity:</label>
-            <input
-              type="number"
-              id="quantity"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              className="form-control"
-              min="1"
-              max={stock}
-              style={{ width: '100px' }}
-            />
-          </div>
-
-          <button className="btn btn-primary btn-lg me-2">
-            <i className="bi bi-cart-plus"></i> Add to Cart
-          </button>
-          <button className="btn btn-outline-secondary btn-lg">
-            <i className="bi bi-heart"></i> Add to Wishlist
-          </button>
         </div>
       </div>
     </div>

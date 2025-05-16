@@ -1,137 +1,175 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axiosInstance from '../apis/config';
 import ProductCard from '../components/ProductCard';
 import Sidebar from '../components/Sidebar';
-import { useSearchParams } from 'react-router-dom';
+import ScrollToTop from '../components/ScrollToTop';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
-  const [skip, setSkip] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [skip, setSkip] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const limit = 20;
+
+  // Get category from URL params
   const selectedCategory = searchParams.get('category');
-  const limit = 12;
 
-  const fetchProducts = async (skipValue) => {
+  const observer = useRef();
+  const lastProductRef = useCallback(node => {
     if (loading) return;
-    setLoading(true);
-    setError(null);
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setSkip(prevSkip => prevSkip + limit);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
-    try {
-      const endpoint = selectedCategory 
-        ? `/products/category/${selectedCategory}`
-        : '/products';
+  const formatCategoryName = (category) => {
+    return category.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  };
 
-      const params = !selectedCategory ? { limit, skip: skipValue } : undefined;
-      const response = await axiosInstance.get(endpoint, { params });
-      
-      setProducts((prev) => {
-        if (skipValue === 0) return response.data.products;
-        
-        const existingIds = new Set(prev.map(p => p.id));
-        const newProducts = response.data.products.filter(p => !existingIds.has(p.id));
-        return [...prev, ...newProducts];
-      });
-
-      // For category endpoints, we get all products at once
-      // For the main endpoint, we check if we received a full page
-      setHasMore(
-        selectedCategory 
-          ? false 
-          : response.data.products.length === limit
-      );
-    } catch (err) {
-      setError('Failed to load products. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
+  const handleCategorySelect = (category) => {
+    setProducts([]);
+    setSkip(0);
+    setHasMore(true);
+    
+    // Update URL params
+    const currentParams = new URLSearchParams(searchParams);
+    if (category) {
+      currentParams.set('category', category);
+      currentParams.delete('search'); // Clear search when selecting category
+    } else {
+      currentParams.delete('category');
     }
+    setSearchParams(currentParams);
+  };
+
+  const handleClearFilters = () => {
+    setProducts([]);
+    setSkip(0);
+    setHasMore(true);
+    setSearchParams({}); // Clear all params
   };
 
   useEffect(() => {
     setProducts([]);
     setSkip(0);
     setHasMore(true);
-    fetchProducts(0);
-  }, [selectedCategory]);
+  }, [selectedCategory, searchParams.get('search')]);
 
   useEffect(() => {
-    if (skip > 0 && !selectedCategory) {
-      fetchProducts(skip);
-    }
-  }, [skip, selectedCategory]);
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        let url = '/products';
+        const searchQuery = searchParams.get('search');
+        
+        if (selectedCategory) {
+          url = `/products/category/${selectedCategory}`;
+        } else if (searchQuery) {
+          url = `/products/search?q=${searchQuery}`;
+        }
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (loading || !hasMore || selectedCategory) return;
+        const params = !selectedCategory ? { limit, skip } : undefined;
+        const response = await axiosInstance.get(url, { params });
+        
+        setProducts(prev => {
+          if (skip === 0) return response.data.products;
+          const newProducts = response.data.products.filter(
+            newProduct => !prev.some(p => p.id === newProduct.id)
+          );
+          return [...prev, ...newProducts];
+        });
 
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const fullHeight = document.documentElement.scrollHeight;
-
-      if (scrollTop + windowHeight >= fullHeight - 100) {
-        setSkip((prevSkip) => prevSkip + limit);
+        setHasMore(
+          selectedCategory 
+            ? false 
+            : response.data.products.length === limit
+        );
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasMore, selectedCategory, loading]);
-
-  const handleCategorySelect = (category) => {
-    if (category) {
-      setSearchParams({ category });
-    } else {
-      setSearchParams({});
-    }
-  };
+    fetchProducts();
+  }, [skip, selectedCategory, searchParams]);
 
   return (
-    <div className="container-fluid mt-4">
+    <div className="container-fluid py-4">
       <div className="row">
-        <div className="col-md-3 mb-4">
+        {/* Sidebar */}
+        <div className="col-lg-3 mb-4">
           <Sidebar 
             onCategorySelect={handleCategorySelect}
             selectedCategory={selectedCategory}
           />
         </div>
-        <div className="col-md-9">
-          <h2>
-            {selectedCategory 
-              ? selectedCategory.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') 
-              : 'All Products'
-            }
-          </h2>
-          <hr />
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
+
+        {/* Main Content */}
+        <div className="col-lg-9">
+          {/* Header */}
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h4 className="mb-0">
+              {selectedCategory 
+                ? formatCategoryName(selectedCategory)
+                : searchParams.get('search')
+                  ? `Search Results for "${searchParams.get('search')}"`
+                  : 'All Products'
+              }
+            </h4>
+            {(selectedCategory || searchParams.get('search')) && (
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={handleClearFilters}
+              >
+                <i className="bi bi-x-lg me-1"></i>
+                Clear Filter
+              </button>
+            )}
+          </div>
+
+          {/* Products Grid */}
+          {products.length === 0 && !loading ? (
+            <div className="text-center py-5">
+              <i className="bi bi-inbox display-1 text-muted"></i>
+              <h3 className="mt-3">No Products Found</h3>
+              <p className="text-muted">
+                We couldn't find any products matching your criteria.
+              </p>
+            </div>
+          ) : (
+            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+              {products.map((product, index) => (
+                <div 
+                  key={product.id} 
+                  className="col"
+                  ref={index === products.length - 1 ? lastProductRef : null}
+                >
+                  <ProductCard data={product} />
+                </div>
+              ))}
             </div>
           )}
-          <div className="row row-cols-1 row-cols-md-3 g-4">
-            {products.map((product) => (
-              <div className="col" key={product.id}>
-                <ProductCard data={product} />
-              </div>
-            ))}
-          </div>
+
+          {/* Loading Indicator */}
           {loading && (
-            <div className="text-center mt-4">
+            <div className="text-center py-4">
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
           )}
-          {!hasMore && !loading && products.length > 0 && (
-            <p className="text-center mt-4">No more products to load</p>
-          )}
-          {!loading && products.length === 0 && !error && (
-            <p className="text-center mt-4">No products found.</p>
-          )}
         </div>
       </div>
+      <ScrollToTop />
     </div>
   );
 }
