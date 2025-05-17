@@ -1,6 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
-const ThemeContext = createContext();
+export const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [darkMode, setDarkMode] = useState(() => {
@@ -10,10 +10,14 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    const root = document.documentElement;
+    
     if (darkMode) {
-      document.documentElement.setAttribute('data-bs-theme', 'dark');
+      root.setAttribute('data-bs-theme', 'dark');
+      document.body.classList.add('dark-mode');
     } else {
-      document.documentElement.setAttribute('data-bs-theme', 'light');
+      root.setAttribute('data-bs-theme', 'light');
+      document.body.classList.remove('dark-mode');
     }
   }, [darkMode]);
 
@@ -26,12 +30,4 @@ export function ThemeProvider({ children }) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
 } 

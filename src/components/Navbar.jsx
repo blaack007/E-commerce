@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/useTheme';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadUserCart } from '../store/slices/cartSlice';
 
@@ -129,15 +129,15 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg shadow-sm sticky-top bg-white">
+      <nav className={`navbar navbar-expand-lg shadow-sm sticky-top ${darkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-white'}`}>
         <div className="container">
-          <Link className="navbar-brand d-flex align-items-center" to="/">
+          <Link className={`navbar-brand d-flex align-items-center ${darkMode ? 'text-light' : ''}`} to="/">
             <i className="bi bi-shop fs-4 me-2 text-primary"></i>
             <span className="fw-bold">E-Shop</span>
           </Link>
           
           <button 
-            className="navbar-toggler" 
+            className={`navbar-toggler ${darkMode ? 'border-light' : ''}`}
             type="button" 
             data-bs-toggle="collapse" 
             data-bs-target="#navbarNav"
@@ -161,13 +161,13 @@ export default function Navbar() {
               <form className="d-flex" role="search" onSubmit={handleSearch}>
                 <div className="input-group">
                   <input 
-                    className="form-control border-end-0 rounded-end-0" 
+                    className={`form-control ${darkMode ? 'bg-dark text-light border-dark' : ''}`}
                     type="search" 
                     placeholder="Search products..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  <button className="btn btn-primary rounded-start-0" type="submit">
+                  <button className="btn btn-primary" type="submit">
                     <i className="bi bi-search"></i>
                   </button>
                 </div>
@@ -177,7 +177,7 @@ export default function Navbar() {
 
               <div className="d-flex gap-2">
                 <button
-                  className="btn btn-outline-primary"
+                  className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'}`}
                   onClick={toggleTheme}
                   title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                 >
@@ -186,7 +186,7 @@ export default function Navbar() {
 
                 <Link 
                   to="/cart" 
-                  className="btn btn-outline-primary position-relative"
+                  className={`btn position-relative ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'}`}
                 >
                   <i className="bi bi-cart3"></i>
                   <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -197,7 +197,7 @@ export default function Navbar() {
                 {currentUser ? (
                   <div className="user-dropdown position-relative">
                     <button 
-                      className="btn btn-outline-primary d-flex align-items-center gap-2"
+                      className={`btn d-flex align-items-center gap-2 ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'}`}
                       onClick={() => setShowDropdown(!showDropdown)}
                     >
                       <i className="bi bi-person-circle"></i>
@@ -205,8 +205,8 @@ export default function Navbar() {
                       <i className="bi bi-chevron-down"></i>
                     </button>
                     {showDropdown && (
-                      <div className="position-absolute top-100 end-0 mt-1 py-2 bg-white rounded-3 shadow" style={{ minWidth: '200px', zIndex: 1000 }}>
-                        <div className="px-3 py-2 text-muted small border-bottom">
+                      <div className={`position-absolute top-100 end-0 mt-1 py-2 rounded-3 shadow ${darkMode ? 'bg-dark' : 'bg-white'}`} style={{ minWidth: '200px', zIndex: 1000 }}>
+                        <div className={`px-3 py-2 border-bottom ${darkMode ? 'text-light border-secondary' : 'text-muted'} small`}>
                           Signed in as<br />
                           <strong>{currentUser.email}</strong>
                         </div>
@@ -223,7 +223,7 @@ export default function Navbar() {
                 ) : (
                   <>
                     <button 
-                      className="btn btn-outline-primary"
+                      className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'}`}
                       onClick={() => setShowLoginModal(true)}
                     >
                       <i className="bi bi-person-circle me-1"></i>
@@ -252,11 +252,11 @@ export default function Navbar() {
            aria-labelledby="loginModalLabel"
            aria-hidden={!showLoginModal}>
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
+          <div className={`modal-content ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className="modal-header">
               <h5 className="modal-title" id="loginModalLabel">Login</h5>
               <button type="button" 
-                      className="btn-close" 
+                      className={`btn-close ${darkMode ? 'btn-close-white' : ''}`}
                       onClick={() => setShowLoginModal(false)}
                       aria-label="Close"></button>
             </div>
@@ -271,7 +271,7 @@ export default function Navbar() {
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">Username</label>
                   <input type="text" 
-                         className={`form-control ${errors.username ? 'is-invalid' : ''}`}
+                         className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : ''} ${errors.username ? 'is-invalid' : ''}`}
                          id="username"
                          name="username"
                          value={formData.username}
@@ -285,7 +285,7 @@ export default function Navbar() {
                 <div className="mb-3">
                   <label htmlFor="password" className="form-label">Password</label>
                   <input type="password" 
-                         className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                         className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : ''} ${errors.password ? 'is-invalid' : ''}`}
                          id="password"
                          name="password"
                          value={formData.password}
@@ -299,7 +299,7 @@ export default function Navbar() {
               </div>
               <div className="modal-footer">
                 <button type="button" 
-                        className="btn btn-secondary" 
+                        className={`btn ${darkMode ? 'btn-outline-light' : 'btn-secondary'}`}
                         onClick={() => setShowLoginModal(false)}>
                   Close
                 </button>

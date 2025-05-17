@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/useTheme';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
-import ProductModal from './ProductModal';
+
+// Lazy load the ProductModal component
+const ProductModal = lazy(() => import('./ProductModal'));
+
+// Loading component for modal
+const ModalLoadingSpinner = () => (
+  <div className="modal-dialog modal-dialog-centered">
+    <div className="modal-content">
+      <div className="modal-body text-center py-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function ProductCard(props) {
   const { data } = props;
@@ -136,11 +151,13 @@ export default function ProductCard(props) {
         </div>
       </div>
 
-      <ProductModal 
-        product={data}
-        show={showModal}
-        onClose={() => setShowModal(false)}
-      />
+      <Suspense fallback={<ModalLoadingSpinner />}>
+        <ProductModal 
+          product={data}
+          show={showModal}
+          onClose={() => setShowModal(false)}
+        />
+      </Suspense>
     </>
   );
 }

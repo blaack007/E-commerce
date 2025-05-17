@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../apis/config';
+import { useTheme } from '../context/useTheme';
 
 export default function Sidebar({ onCategorySelect, selectedCategory }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { darkMode } = useTheme();
 
   useEffect(() => {
     axiosInstance
@@ -36,7 +38,7 @@ export default function Sidebar({ onCategorySelect, selectedCategory }) {
 
   return (
     <div className="card shadow-sm border-0">
-      <div className="card-header bg-white border-bottom border-2 py-3">
+      <div className={`card-header border-bottom border-2 py-3 ${darkMode ? 'bg-dark text-light' : 'bg-white'}`}>
         <h5 className="mb-0 fw-bold">
           <i className="bi bi-grid-3x3-gap-fill me-2"></i>
           Categories
