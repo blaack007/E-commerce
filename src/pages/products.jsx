@@ -17,6 +17,7 @@ export default function Products() {
 
   // Get category from URL params
   const selectedCategory = searchParams.get('category');
+  const searchQuery = searchParams.get('search');
 
   const observer = useRef();
   const lastProductRef = useCallback(node => {
@@ -61,14 +62,13 @@ export default function Products() {
     setProducts([]);
     setSkip(0);
     setHasMore(true);
-  }, [selectedCategory, searchParams.get('search')]);
+  }, [selectedCategory, searchQuery]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
         let url = '/products';
-        const searchQuery = searchParams.get('search');
         
         if (selectedCategory) {
           url = `/products/category/${selectedCategory}`;
@@ -109,7 +109,7 @@ export default function Products() {
     };
 
     fetchProducts();
-  }, [skip, selectedCategory, searchParams]);
+  }, [skip, selectedCategory, searchQuery]);
 
   return (
     <div className="container-fluid py-4">
@@ -129,12 +129,12 @@ export default function Products() {
             <h4 className="mb-0">
               {selectedCategory 
                 ? t(getCategoryTranslationKey(selectedCategory))
-                : searchParams.get('search')
-                  ? `${t('searchResultsFor')} "${searchParams.get('search')}"`
+                : searchQuery
+                  ? `${t('searchResultsFor')} "${searchQuery}"`
                   : t('allProducts')
               }
             </h4>
-            {(selectedCategory || searchParams.get('search')) && (
+            {(selectedCategory || searchQuery) && (
               <button
                 className="btn btn-outline-secondary btn-sm"
                 onClick={handleClearFilters}
