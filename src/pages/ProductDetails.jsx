@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
+import { useLanguage } from '../context/LanguageContext';
 import axiosInstance from '../apis/config';
 
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useLanguage();
   const [product, setProduct] = useState(null);
   const [mainImage, setMainImage] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -40,7 +42,7 @@ export default function ProductDetails() {
     return (
       <div className="container py-5 text-center">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">{t('loading')}</span>
         </div>
       </div>
     );
@@ -84,12 +86,16 @@ export default function ProductDetails() {
     return stars;
   };
 
+  const getCategoryTranslationKey = (category) => {
+    return `category${category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`;
+  };
+
   return (
     <div className="container-fluid mt-4">
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
-          <li className="breadcrumb-item"><Link to="/" className="text-decoration-none">Home</Link></li>
-          <li className="breadcrumb-item"><Link to="/products" className="text-decoration-none">Products</Link></li>
+          <li className="breadcrumb-item"><Link to="/" className="text-decoration-none">{t('allProducts')}</Link></li>
+          <li className="breadcrumb-item"><Link to="/products" className="text-decoration-none">{t('products')}</Link></li>
           <li className="breadcrumb-item active" aria-current="page">{title}</li>
         </ol>
       </nav>
@@ -139,32 +145,32 @@ export default function ProductDetails() {
 
               <div className="mb-4">
                 {renderStars()}
-                <span className="ms-2 text-muted">({rating.toFixed(1)} rating)</span>
+                <span className="ms-2 text-muted">({rating.toFixed(1)} {t('rating')})</span>
               </div>
 
               <p className="mb-4">{description}</p>
 
               <div className="row mb-4">
                 <div className="col-6">
-                  <p className="mb-1"><strong>Brand:</strong></p>
+                  <p className="mb-1"><strong>{t('brand')}:</strong></p>
                   <p className="text-muted">{brand}</p>
                 </div>
                 <div className="col-6">
-                  <p className="mb-1"><strong>Category:</strong></p>
-                  <p className="text-muted">{category}</p>
+                  <p className="mb-1"><strong>{t('category')}:</strong></p>
+                  <p className="text-muted">{t(getCategoryTranslationKey(category))}</p>
                 </div>
                 <div className="col-6">
-                  <p className="mb-1"><strong>Availability:</strong></p>
+                  <p className="mb-1"><strong>{t('availability')}:</strong></p>
                   <p>
                     <span className={`badge ${stock > 0 ? 'bg-success' : 'bg-danger'}`}>
-                      {stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+                      {stock > 0 ? `${t('inStock')} (${stock})` : t('outOfStock')}
                     </span>
                   </p>
                 </div>
               </div>
 
               <div className="mb-4">
-                <label htmlFor="quantity" className="form-label">Quantity:</label>
+                <label htmlFor="quantity" className="form-label">{t('quantity')}:</label>
                 <div className="input-group" style={{ width: '140px' }}>
                   <button 
                     className="btn btn-outline-secondary" 
@@ -199,15 +205,12 @@ export default function ProductDetails() {
 
               <div className="d-flex gap-2">
                 <button 
-                  className="btn btn-primary btn-lg flex-grow-1"
-                  disabled={stock === 0}
+                  className="btn btn-primary"
                   onClick={handleAddToCart}
+                  disabled={stock === 0}
                 >
                   <i className="bi bi-cart-plus me-2"></i>
-                  Add to Cart
-                </button>
-                <button className="btn btn-outline-primary btn-lg">
-                  <i className="bi bi-heart"></i>
+                  {t('addToCart')}
                 </button>
               </div>
             </div>

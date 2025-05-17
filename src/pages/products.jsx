@@ -4,6 +4,7 @@ import axiosInstance from '../apis/config';
 import ProductCard from '../components/ProductCard';
 import Sidebar from '../components/Sidebar';
 import ScrollToTop from '../components/ScrollToTop';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,7 @@ export default function Products() {
   const [hasMore, setHasMore] = useState(true);
   const [skip, setSkip] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useLanguage();
   const limit = 20;
 
   // Get category from URL params
@@ -28,10 +30,8 @@ export default function Products() {
     if (node) observer.current.observe(node);
   }, [loading, hasMore]);
 
-  const formatCategoryName = (category) => {
-    return category.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+  const getCategoryTranslationKey = (category) => {
+    return `category${category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`;
   };
 
   const handleCategorySelect = (category) => {
@@ -79,21 +79,30 @@ export default function Products() {
         const params = !selectedCategory ? { limit, skip } : undefined;
         const response = await axiosInstance.get(url, { params });
         
-        setProducts(prev => {
-          if (skip === 0) return response.data.products;
-          const newProducts = response.data.products.filter(
-            newProduct => !prev.some(p => p.id === newProduct.id)
-          );
-          return [...prev, ...newProducts];
-        });
+        // Check if response.data and response.data.products exist
+        if (response.data && Array.isArray(response.data.products)) {
+          setProducts(prev => {
+            if (skip === 0) return response.data.products;
+            const newProducts = response.data.products.filter(
+              newProduct => !prev.some(p => p.id === newProduct.id)
+            );
+            return [...prev, ...newProducts];
+          });
 
-        setHasMore(
-          selectedCategory 
-            ? false 
-            : response.data.products.length === limit
-        );
+          setHasMore(
+            selectedCategory 
+              ? false 
+              : response.data.products.length === limit
+          );
+        } else {
+          console.error('Invalid response format:', response.data);
+          setProducts([]);
+          setHasMore(false);
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
+        setProducts([]);
+        setHasMore(false);
       } finally {
         setLoading(false);
       }
@@ -119,10 +128,10 @@ export default function Products() {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h4 className="mb-0">
               {selectedCategory 
-                ? formatCategoryName(selectedCategory)
+                ? t(getCategoryTranslationKey(selectedCategory))
                 : searchParams.get('search')
-                  ? `Search Results for "${searchParams.get('search')}"`
-                  : 'All Products'
+                  ? `${t('searchResultsFor')} "${searchParams.get('search')}"`
+                  : t('allProducts')
               }
             </h4>
             {(selectedCategory || searchParams.get('search')) && (
@@ -131,7 +140,7 @@ export default function Products() {
                 onClick={handleClearFilters}
               >
                 <i className="bi bi-x-lg me-1"></i>
-                Clear Filter
+                {t('clearFilter')}
               </button>
             )}
           </div>
@@ -140,9 +149,9 @@ export default function Products() {
           {products.length === 0 && !loading ? (
             <div className="text-center py-5">
               <i className="bi bi-inbox display-1 text-muted"></i>
-              <h3 className="mt-3">No Products Found</h3>
+              <h3 className="mt-3">{t('noProductsFound')}</h3>
               <p className="text-muted">
-                We couldn't find any products matching your criteria.
+                {t('noProductsFoundDesc')}
               </p>
             </div>
           ) : (
@@ -163,7 +172,7 @@ export default function Products() {
           {loading && (
             <div className="text-center py-4">
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('loading')}</span>
               </div>
             </div>
           )}

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../apis/config';
 import { useTheme } from '../context/useTheme';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Sidebar({ onCategorySelect, selectedCategory }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const { darkMode } = useTheme();
+  const { t } = useLanguage();
 
   useEffect(() => {
     axiosInstance
@@ -16,10 +18,6 @@ export default function Sidebar({ onCategorySelect, selectedCategory }) {
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   }, []);
-
-  const formatCategoryName = (category) => {
-    return category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  };
 
   if (loading) {
     return (
@@ -41,7 +39,7 @@ export default function Sidebar({ onCategorySelect, selectedCategory }) {
       <div className={`card-header border-bottom border-2 py-3 ${darkMode ? 'bg-dark text-light' : 'bg-white'}`}>
         <h5 className="mb-0 fw-bold">
           <i className="bi bi-grid-3x3-gap-fill me-2"></i>
-          Categories
+          {t('categories')}
         </h5>
       </div>
       <div className="list-group list-group-flush">
@@ -50,7 +48,7 @@ export default function Sidebar({ onCategorySelect, selectedCategory }) {
           onClick={() => onCategorySelect(null)}
         >
           <i className="bi bi-collection"></i>
-          All Products
+          {t('allProducts')}
         </button>
         {categories.map((category) => (
           <button
@@ -59,7 +57,7 @@ export default function Sidebar({ onCategorySelect, selectedCategory }) {
             onClick={() => onCategorySelect(category)}
           >
             <i className={`bi bi-${getCategoryIcon(category)}`}></i>
-            {formatCategoryName(category)}
+            {t(`category${category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`)}
           </button>
         ))}
       </div>

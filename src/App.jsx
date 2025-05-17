@@ -3,6 +3,7 @@ import React, { Suspense, lazy } from 'react';
 import './App.css'
 import Navbar from "./components/Navbar";
 import { ThemeProvider } from "./context/ThemeContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 // Lazy load route components
 const Products = lazy(() => import("./pages/products"));
@@ -23,22 +24,24 @@ const LoadingSpinner = () => (
 
 function App() {
   return (
-    <ThemeProvider>
-      <Navbar />
-      <div className="container my-5">
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route path="/" element={<Products />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/products/:id" element={<ProductDetails />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="*" element={<Notfound />} />
-          </Routes>
-        </Suspense>
-      </div>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <Navbar />
+        <div className="container my-5">
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route path="/" element={<Products />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/:id" element={<ProductDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="*" element={<Notfound />} />
+            </Routes>
+          </Suspense>
+        </div>
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
 

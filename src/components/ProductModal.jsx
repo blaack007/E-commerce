@@ -1,9 +1,11 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ProductModal({ product, show, onClose }) {
   const dispatch = useDispatch();
+  const { t } = useLanguage();
 
   if (!show || !product) return null;
 
@@ -58,6 +60,10 @@ export default function ProductModal({ product, show, onClose }) {
     return stars;
   };
 
+  const getCategoryTranslationKey = (category) => {
+    return `category${category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`;
+  };
+
   return (
     <>
       <div className="modal fade show" 
@@ -72,7 +78,7 @@ export default function ProductModal({ product, show, onClose }) {
                 type="button" 
                 className="btn-close" 
                 onClick={onClose}
-                aria-label="Close"
+                aria-label={t('close')}
               ></button>
             </div>
             <div className="modal-body">
@@ -104,11 +110,11 @@ export default function ProductModal({ product, show, onClose }) {
                       <>
                         <button className="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
                           <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                          <span className="visually-hidden">Previous</span>
+                          <span className="visually-hidden">{t('previous')}</span>
                         </button>
                         <button className="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
                           <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                          <span className="visually-hidden">Next</span>
+                          <span className="visually-hidden">{t('next')}</span>
                         </button>
                       </>
                     )}
@@ -136,18 +142,18 @@ export default function ProductModal({ product, show, onClose }) {
 
                   <div className="row mb-3">
                     <div className="col-6">
-                      <p className="mb-1"><strong>Brand:</strong></p>
+                      <p className="mb-1"><strong>{t('brand')}:</strong></p>
                       <p className="text-muted">{brand}</p>
                     </div>
                     <div className="col-6">
-                      <p className="mb-1"><strong>Category:</strong></p>
-                      <p className="text-muted">{category}</p>
+                      <p className="mb-1"><strong>{t('category')}:</strong></p>
+                      <p className="text-muted">{t(getCategoryTranslationKey(category))}</p>
                     </div>
                     <div className="col-12">
-                      <p className="mb-1"><strong>Availability:</strong></p>
+                      <p className="mb-1"><strong>{t('availability')}:</strong></p>
                       <p>
                         <span className={`badge ${stock > 0 ? 'bg-success' : 'bg-danger'}`}>
-                          {stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+                          {stock > 0 ? `${t('inStock')} (${stock})` : t('outOfStock')}
                         </span>
                       </p>
                     </div>
@@ -161,7 +167,7 @@ export default function ProductModal({ product, show, onClose }) {
                 className="btn btn-secondary" 
                 onClick={onClose}
               >
-                Close
+                {t('close')}
               </button>
               <button 
                 type="button" 
@@ -170,7 +176,7 @@ export default function ProductModal({ product, show, onClose }) {
                 disabled={stock === 0}
               >
                 <i className="bi bi-cart-plus me-2"></i>
-                Add to Cart
+                {t('addToCart')}
               </button>
             </div>
           </div>

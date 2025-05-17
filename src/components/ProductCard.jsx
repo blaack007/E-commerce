@@ -1,6 +1,7 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/useTheme';
+import { useLanguage } from '../context/LanguageContext';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
 
@@ -8,17 +9,20 @@ import { addToCart } from '../store/slices/cartSlice';
 const ProductModal = lazy(() => import('./ProductModal'));
 
 // Loading component for modal
-const ModalLoadingSpinner = () => (
-  <div className="modal-dialog modal-dialog-centered">
-    <div className="modal-content">
-      <div className="modal-body text-center py-5">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+const ModalLoadingSpinner = () => {
+  const { t } = useLanguage();
+  return (
+    <div className="modal-dialog modal-dialog-centered">
+      <div className="modal-content">
+        <div className="modal-body text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">{t('loading')}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function ProductCard(props) {
   const { data } = props;
@@ -26,6 +30,7 @@ export default function ProductCard(props) {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { darkMode } = useTheme();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
 
   const handleNavigateToDetails = (productId) => {
@@ -77,7 +82,7 @@ export default function ProductCard(props) {
           {imageLoading && (
             <div className={`position-absolute w-100 h-100 d-flex justify-content-center align-items-center ${darkMode ? 'bg-dark' : 'bg-light'}`}>
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('loading')}</span>
               </div>
             </div>
           )}
@@ -102,7 +107,7 @@ export default function ProductCard(props) {
           {/* Stock Status Badge */}
           <div className="position-absolute top-0 end-0 m-2">
             <span className={`badge ${data.stock > 0 ? 'bg-success' : 'bg-danger'}`}>
-              {data.stock > 0 ? 'In Stock' : 'Out of Stock'}
+              {data.stock > 0 ? t('inStock') : t('outOfStock')}
             </span>
           </div>
         </div>
@@ -136,7 +141,7 @@ export default function ProductCard(props) {
                 onClick={() => handleNavigateToDetails(data.id)}
               >
                 <i className="bi bi-eye me-1"></i>
-                View Details
+                {t('viewDetails')}
               </button>
               <button 
                 className={`btn btn-primary btn-sm flex-grow-1 ${data.stock === 0 ? 'disabled' : ''}`}
@@ -144,7 +149,7 @@ export default function ProductCard(props) {
                 onClick={handleAddToCart}
               >
                 <i className="bi bi-cart-plus me-1"></i>
-                Add to Cart
+                {t('addToCart')}
               </button>
             </div>
           </div>

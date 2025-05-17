@@ -2,9 +2,11 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, updateQuantity } from '../store/slices/cartSlice';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const { t } = useLanguage();
   const { items, totalAmount } = useSelector((state) => state.cart);
   const shipping = 10.00;
   const tax = totalAmount * 0.1; // 10% tax
@@ -19,16 +21,20 @@ const Cart = () => {
     dispatch(removeFromCart(id));
   };
 
+  const getCategoryTranslationKey = (category) => {
+    return `category${category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`;
+  };
+
   return (
     <div className="container py-5">
-      <h1 className="mb-5">Your Shopping Cart</h1>
+      <h1 className="mb-5">{t('cart')}</h1>
       <div className="row">
         <div className="col-lg-8">
           <div className="card-body">
             {items.length === 0 ? (
               <div className="text-center py-4">
-                <h5>Your cart is empty</h5>
-                <p className="text-muted">Add items to your cart to see them here.</p>
+                <h5>{t('emptyCart')}</h5>
+                <p className="text-muted">{t('emptyCart')}</p>
               </div>
             ) : (
               items.map((item) => (
@@ -39,7 +45,7 @@ const Cart = () => {
                     </div>
                     <div className="col-md-5">
                       <h5 className="card-title">{item.title}</h5>
-                      <p className="text-muted">Category: {item.category}</p>
+                      <p className="text-muted">{t('category')}: {t(getCategoryTranslationKey(item.category))}</p>
                     </div>
                     <div className="col-md-2">
                       <div className="input-group">
@@ -72,7 +78,7 @@ const Cart = () => {
                         className="btn btn-sm btn-outline-danger"
                         onClick={() => handleRemoveItem(item.id)}
                       >
-                        <i className="bi bi-trash"></i>
+                        <i className="bi bi-trash"></i> {t('remove')}
                       </button>
                     </div>
                   </div>
@@ -83,42 +89,42 @@ const Cart = () => {
           </div>
           <div className="text-start mb-4">
             <Link to="/products" className="btn btn-outline-primary">
-              <i className="bi bi-arrow-left me-2"></i>Continue Shopping
+              <i className="bi bi-arrow-left me-2"></i>{t('allProducts')}
             </Link>
           </div>
         </div>
         <div className="col-lg-4">
           <div className="card cart-summary">
             <div className="card-body">
-              <h5 className="card-title mb-4">Order Summary</h5>
+              <h5 className="card-title mb-4">{t('checkout')}</h5>
               <div className="d-flex justify-content-between mb-3">
-                <span>Subtotal</span>
+                <span>{t('subtotal')}</span>
                 <span>${totalAmount.toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between mb-3">
-                <span>Shipping</span>
+                <span>{t('shipping')}</span>
                 <span>${shipping.toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between mb-3">
-                <span>Tax</span>
+                <span>{t('tax')}</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
               <hr />
               <div className="d-flex justify-content-between mb-4">
-                <strong>Total</strong>
+                <strong>{t('total')}</strong>
                 <strong>${(totalAmount + shipping + tax).toFixed(2)}</strong>
               </div>
               <button className="btn btn-primary w-100" disabled={items.length === 0}>
-                Proceed to Checkout
+                {t('checkout')}
               </button>
             </div>
           </div>
           <div className="card mt-4">
             <div className="card-body">
-              <h5 className="card-title mb-3">Apply Promo Code</h5>
+              <h5 className="card-title mb-3">{t('promoCode')}</h5>
               <div className="input-group mb-3">
-                <input type="text" className="form-control" placeholder="Enter promo code" />
-                <button className="btn btn-outline-secondary" type="button">Apply</button>
+                <input type="text" className="form-control" placeholder={t('enterPromoCode')} />
+                <button className="btn btn-outline-secondary" type="button">{t('apply')}</button>
               </div>
             </div>
           </div>

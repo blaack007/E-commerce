@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/useTheme';
+import { useLanguage } from '../context/LanguageContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadUserCart } from '../store/slices/cartSlice';
 
@@ -12,8 +13,10 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { darkMode, toggleTheme } = useTheme();
+  const { language, toggleLanguage, t } = useLanguage();
   const { totalQuantity } = useSelector((state) => state.cart);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem('currentUser');
@@ -115,11 +118,14 @@ export default function Navbar() {
     }
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest('.user-dropdown')) {
         setShowDropdown(false);
+      }
+      if (!event.target.closest('.lang-dropdown')) {
+        setShowLangDropdown(false);
       }
     };
 
@@ -152,7 +158,7 @@ export default function Navbar() {
                   className={`nav-link ${isActive('/') || isActive('/products') ? 'active' : ''}`}
                   to="/products"
                 >
-                  Products
+                  {t('products')}
                 </Link>
               </li>
             </ul>
@@ -163,7 +169,7 @@ export default function Navbar() {
                   <input 
                     className={`form-control ${darkMode ? 'bg-dark text-light border-dark' : ''}`}
                     type="search" 
-                    placeholder="Search products..." 
+                    placeholder={t('search')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -176,10 +182,45 @@ export default function Navbar() {
               <div className="vr"></div>
 
               <div className="d-flex gap-2">
+                <div className="lang-dropdown position-relative">
+                  <button
+                    className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'} d-flex align-items-center gap-2`}
+                    onClick={() => setShowLangDropdown(!showLangDropdown)}
+                  >
+                    <i className="bi bi-globe"></i>
+                    <span className="text-uppercase">{language}</span>
+                    <i className="bi bi-chevron-down"></i>
+                  </button>
+                  {showLangDropdown && (
+                    <div className={`position-absolute top-100 end-0 mt-1 py-2 rounded-3 shadow ${darkMode ? 'bg-dark' : 'bg-white'}`} style={{ minWidth: '120px', zIndex: 1000 }}>
+                      <button
+                        className={`dropdown-item d-flex align-items-center gap-2 px-3 py-2 ${language === 'en' ? 'active' : ''}`}
+                        onClick={() => {
+                          toggleLanguage('en');
+                          setShowLangDropdown(false);
+                        }}
+                      >
+                        <span className="text-uppercase">EN</span>
+                        {language === 'en' && <i className="bi bi-check2 ms-auto"></i>}
+                      </button>
+                      <button
+                        className={`dropdown-item d-flex align-items-center gap-2 px-3 py-2 ${language === 'ar' ? 'active' : ''}`}
+                        onClick={() => {
+                          toggleLanguage('ar');
+                          setShowLangDropdown(false);
+                        }}
+                      >
+                        <span className="text-uppercase">AR</span>
+                        {language === 'ar' && <i className="bi bi-check2 ms-auto"></i>}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 <button
                   className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'}`}
                   onClick={toggleTheme}
-                  title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  title={darkMode ? t('lightMode') : t('darkMode')}
                 >
                   <i className={`bi bi-${darkMode ? 'sun' : 'moon-stars'}`}></i>
                 </button>
@@ -187,6 +228,7 @@ export default function Navbar() {
                 <Link 
                   to="/cart" 
                   className={`btn position-relative ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'}`}
+                  title={t('cart')}
                 >
                   <i className="bi bi-cart3"></i>
                   <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -207,7 +249,7 @@ export default function Navbar() {
                     {showDropdown && (
                       <div className={`position-absolute top-100 end-0 mt-1 py-2 rounded-3 shadow ${darkMode ? 'bg-dark' : 'bg-white'}`} style={{ minWidth: '200px', zIndex: 1000 }}>
                         <div className={`px-3 py-2 border-bottom ${darkMode ? 'text-light border-secondary' : 'text-muted'} small`}>
-                          Signed in as<br />
+                          {t('signedInAs')}<br />
                           <strong>{currentUser.email}</strong>
                         </div>
                         <button 
@@ -215,7 +257,7 @@ export default function Navbar() {
                           onClick={handleLogout}
                         >
                           <i className="bi bi-box-arrow-right"></i>
-                          Logout
+                          {t('logout')}
                         </button>
                       </div>
                     )}
@@ -227,7 +269,7 @@ export default function Navbar() {
                       onClick={() => setShowLoginModal(true)}
                     >
                       <i className="bi bi-person-circle me-1"></i>
-                      Login
+                      {t('login')}
                     </button>
 
                     <Link 
@@ -235,7 +277,7 @@ export default function Navbar() {
                       className="btn btn-primary"
                     >
                       <i className="bi bi-person-plus me-1"></i>
-                      Register
+                      {t('register')}
                     </Link>
                   </>
                 )}
@@ -254,43 +296,43 @@ export default function Navbar() {
         <div className="modal-dialog modal-dialog-centered">
           <div className={`modal-content ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className="modal-header">
-              <h5 className="modal-title" id="loginModalLabel">Login</h5>
+              <h5 className="modal-title" id="loginModalLabel">{t('login')}</h5>
               <button type="button" 
                       className={`btn-close ${darkMode ? 'btn-close-white' : ''}`}
                       onClick={() => setShowLoginModal(false)}
-                      aria-label="Close"></button>
+                      aria-label={t('close')}></button>
             </div>
             <form onSubmit={handleLoginSubmit}>
               <div className="modal-body">
                 {errors.general && (
                   <div className="alert alert-danger" role="alert">
-                    {errors.general}
+                    {t('invalidCredentials')}
                   </div>
                 )}
                 
                 <div className="mb-3">
-                  <label htmlFor="username" className="form-label">Username</label>
+                  <label htmlFor="username" className="form-label">{t('username')}</label>
                   <input type="text" 
                          className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : ''} ${errors.username ? 'is-invalid' : ''}`}
                          id="username"
                          name="username"
                          value={formData.username}
                          onChange={handleChange}
-                         placeholder="Enter your username"
+                         placeholder={t('enterUsername')}
                          required />
                   {errors.username && (
                     <div className="invalid-feedback">{errors.username}</div>
                   )}
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
+                  <label htmlFor="password" className="form-label">{t('password')}</label>
                   <input type="password" 
                          className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : ''} ${errors.password ? 'is-invalid' : ''}`}
                          id="password"
                          name="password"
                          value={formData.password}
                          onChange={handleChange}
-                         placeholder="Enter your password"
+                         placeholder={t('enterPassword')}
                          required />
                   {errors.password && (
                     <div className="invalid-feedback">{errors.password}</div>
@@ -301,10 +343,10 @@ export default function Navbar() {
                 <button type="button" 
                         className={`btn ${darkMode ? 'btn-outline-light' : 'btn-secondary'}`}
                         onClick={() => setShowLoginModal(false)}>
-                  Close
+                  {t('close')}
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Login
+                  {t('login')}
                 </button>
               </div>
             </form>
