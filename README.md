@@ -20,6 +20,7 @@ A modern, responsive e-commerce platform built with React and Bootstrap 5. This 
 - 🖼️ Image gallery with thumbnails
 - 🍞 Breadcrumb navigation
 - 📊 Order summary with tax and shipping
+- 🔊 Sound feedback when adding items to cart
 
 ## Technologies Used
 
@@ -105,6 +106,7 @@ e-commerce/
 - Added breadcrumb navigation for better UX
 - Implemented product image gallery with thumbnails
 - Added quantity management in product details
+- Added audio feedback when adding items to cart for better user experience
 
 ### Code Improvements
 - Optimized cart state management
