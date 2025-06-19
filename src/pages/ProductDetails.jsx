@@ -13,6 +13,7 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [mainImage, setMainImage] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const cartSound = new Audio('/cart-sound.mp3');
 
   useEffect(() => {
     axiosInstance
@@ -28,6 +29,7 @@ export default function ProductDetails() {
   }, [id, navigate]);
 
   const handleAddToCart = () => {
+    cartSound.play();
     dispatch(addToCart({
       id: product.id,
       title: product.title,

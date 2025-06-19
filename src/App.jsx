@@ -26,19 +26,21 @@ function App() {
   return (
     <LanguageProvider>
       <ThemeProvider>
-        <Navbar />
-        <div className="container my-5">
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/" element={<Products />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/products/:id" element={<ProductDetails />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="*" element={<Notfound />} />
-            </Routes>
-          </Suspense>
+        <div className="app-wrapper"> {/* Changed from app-container to app-wrapper */}
+          <Navbar /> {/* Navbar is already handled by main-header for positioning */}
+          <main className="main-content"> {/* Added main-content wrapper */}
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="/" element={<Products />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetails />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="*" element={<Notfound />} />
+              </Routes>
+            </Suspense>
+          </main>
         </div>
       </ThemeProvider>
     </LanguageProvider>

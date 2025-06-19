@@ -1,0 +1,23 @@
+/* src/styles/ScrollToTop.css */
+
+/* Specific ScrollToTop button styles */
+.eshop-btn.eshop-btn-primary.rounded-circle.position-fixed {
+  /* The inline styles in the component already set width, height, z-index, opacity */
+  /* Global .eshop-btn has padding, but for a fixed size button, we need to ensure icon centers */
+  padding: 0; /* Override default .eshop-btn padding */
+  transition-property: color, background-color, border-color, box-shadow, opacity; /* Ensure opacity is included from inline style */
+  /* Example custom shadow: */
+  /* box-shadow: 0 0.25rem 0.75rem rgba(var(--neutral-900-rgb), 0.1); */
+}
+
+body.dark-mode .eshop-btn.eshop-btn-primary.rounded-circle.position-fixed {
+  /* Example custom shadow for dark mode: */
+  /* box-shadow: 0 0.25rem 0.75rem rgba(var(--neutral-0-rgb), 0.1); */
+}
+
+/* Ensure icon is centered within the fixed size button */
+.eshop-btn.eshop-btn-primary.rounded-circle.position-fixed .bi {
+  font-size: 1.25rem; /* Adjust icon size as needed */
+  line-height: 1; /* Helps with vertical alignment */
+  margin: auto; /* Helps with centering in flex container */
+} 

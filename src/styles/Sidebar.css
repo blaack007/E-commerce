@@ -1,0 +1,141 @@
+/* src/styles/Sidebar.css */
+
+/* Add any Sidebar-specific structural or layout styles here. */
+/* Theming (colors, fonts, etc.) for card and list-group elements */
+/* is primarily handled by global styles in App.css to ensure consistency. */
+
+.sidebar-list-group .list-group-item {
+  background-color: var(--neutral-50); /* Light background for items */
+  color: var(--neutral-700); /* Standard text color */
+  border-bottom: 1px solid var(--neutral-200); /* Subtle separator */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  padding: 0.85rem 1.25rem; /* Custom padding if needed */
+  font-weight: 500;
+}
+
+.sidebar-list-group .list-group-item:last-child {
+  border-bottom: none;
+}
+
+.sidebar-list-group .list-group-item i.bi {
+  color: var(--neutral-500); /* Slightly muted icon color */
+  transition: color 0.2s ease-in-out;
+  font-size: 1.1rem;
+}
+
+.sidebar-list-group .list-group-item:hover,
+.sidebar-list-group .list-group-item:focus {
+  background-color: var(--neutral-100); /* Slightly darker on hover/focus */
+  color: var(--primary-600); /* Primary color for text on hover/focus */
+  text-decoration: none;
+  outline: none;
+}
+
+.sidebar-list-group .list-group-item:hover i.bi,
+.sidebar-list-group .list-group-item:focus i.bi {
+  color: var(--primary-600); /* Primary color for icon on hover/focus */
+}
+
+.sidebar-list-group .list-group-item.active {
+  background-color: var(--primary-500);
+  color: var(--neutral-50); /* Light text on primary background */
+  border-color: var(--primary-500);
+  font-weight: 700; /* Bold active item */
+}
+
+.sidebar-list-group .list-group-item.active i.bi {
+  color: var(--neutral-50); /* Light icon color on primary background */
+}
+
+/* Dark Mode Styles for Sidebar List Group */
+body.dark-mode .sidebar-list-group .list-group-item {
+  background-color: var(--dark-bg-secondary);
+  color: var(--neutral-200);
+  border-bottom-color: var(--neutral-700);
+}
+
+body.dark-mode .sidebar-list-group .list-group-item i.bi {
+  color: var(--neutral-400);
+}
+
+body.dark-mode .sidebar-list-group .list-group-item:hover,
+body.dark-mode .sidebar-list-group .list-group-item:focus {
+  background-color: var(--dark-bg-tertiary);
+  color: var(--primary-500);
+}
+
+body.dark-mode .sidebar-list-group .list-group-item:hover i.bi,
+body.dark-mode .sidebar-list-group .list-group-item:focus i.bi {
+  color: var(--primary-500);
+}
+
+body.dark-mode .sidebar-list-group .list-group-item.active {
+  background-color: var(--primary-600); /* Slightly darker primary for active in dark mode */
+  color: var(--neutral-50);
+  border-color: var(--primary-600);
+}
+
+body.dark-mode .sidebar-list-group .list-group-item.active i.bi {
+  color: var(--neutral-50);
+}
+
+/* FORCING SCROLLBAR TO THE LEFT */
+/* The .products-sidebar container (defined in App.css and styled for scrollbars below) */
+/* will have its direction set to RTL to move the scrollbar to the left. */
+
+/* The direct child of .products-sidebar, which is the Sidebar component's root div, */
+/* needs to have its direction reset to LTR. We'll use a new class for this. */
+.sidebar-content-wrapper-ltr {
+  direction: ltr;
+}
+
+/* Scrollbar styling for the products-sidebar container */
+/* This assumes the Sidebar component is used within/as an element */
+/* with the class .products-sidebar, which should have */
+/* overflow-y: auto and a max-height defined (e.g., in App.css) */
+
+.products-sidebar::-webkit-scrollbar {
+  width: 10px; /* Width of the entire scrollbar */
+}
+
+.products-sidebar::-webkit-scrollbar-track {
+  background: var(--neutral-100); /* Track color in light mode */
+  border-radius: 10px;
+  margin-block: 2px; /* Adds a little space from the edge */
+}
+
+.products-sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--primary-500); /* Thumb color in light mode */
+  border-radius: 10px;
+  border: 2px solid var(--neutral-100); /* Creates padding around thumb, matches track */
+}
+
+.products-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-600); /* Darker thumb on hover */
+}
+
+/* Dark Mode Scrollbar Styling for .products-sidebar */
+body.dark-mode .products-sidebar::-webkit-scrollbar-track {
+  background: var(--neutral-800); /* Dark track */
+}
+
+body.dark-mode .products-sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--primary-600); /* Thumb color in dark mode */
+  border-color: var(--neutral-800); /* Match dark track for border */
+}
+
+body.dark-mode .products-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-500); /* Lighter thumb on hover for dark mode */
+}
+
+/* Firefox scrollbar styling (simpler, but good for compatibility) */
+.products-sidebar {
+  direction: rtl; /* MOVES SCROLLBAR LEFT */
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: var(--primary-500) var(--neutral-100); /* thumb color, track color */
+}
+
+body.dark-mode .products-sidebar {
+  direction: rtl; /* MOVES SCROLLBAR LEFT */
+  scrollbar-color: var(--primary-600) var(--neutral-800); /* thumb color, track color for dark mode */
+}

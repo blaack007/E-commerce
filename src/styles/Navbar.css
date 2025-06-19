@@ -1,0 +1,201 @@
+/* src/styles/Navbar.css */
+
+/* Base Navbar Structure (main-header comes from App.css for bg/border) */
+.main-header {
+  /* Additional base styles if needed */
+}
+
+/* Navbar Brand */
+.main-header .navbar-brand {
+  color: var(--neutral-800);
+}
+body.dark-mode .main-header .navbar-brand {
+  color: var(--neutral-50);
+}
+
+/* Navbar Toggler */
+.eshop-navbar-toggler {
+  border-color: rgba(var(--neutral-900-rgb), 0.25);
+}
+.eshop-navbar-toggler:focus {
+  box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+}
+.eshop-navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(var(--neutral-700-rgb), 0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+body.dark-mode .eshop-navbar-toggler {
+  border-color: rgba(var(--neutral-50-rgb), 0.25);
+}
+body.dark-mode .eshop-navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(var(--neutral-200-rgb), 0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Nav Links */
+.main-header .nav-link {
+  color: var(--neutral-600);
+  padding: 0.5rem 1rem;
+}
+.main-header .nav-link:hover,
+.main-header .nav-link:focus {
+  color: var(--primary-600);
+}
+.main-header .nav-link.active {
+  color: var(--primary-700);
+  font-weight: 600;
+  border-bottom: 2px solid var(--primary-500);
+  padding-bottom: calc(0.5rem - 2px);
+}
+body.dark-mode .main-header .nav-link {
+  color: var(--neutral-300);
+}
+body.dark-mode .main-header .nav-link:hover,
+body.dark-mode .main-header .nav-link:focus {
+  color: var(--primary-500);
+}
+body.dark-mode .main-header .nav-link.active {
+  color: var(--primary-500);
+  border-bottom: 2px solid var(--primary-500);
+  padding-bottom: calc(0.5rem - 2px);
+}
+
+/* Custom Eshop Buttons */
+/* .eshop-btn, .eshop-btn-primary, .eshop-btn-secondary definitions are now in App.css */
+
+/* Eshop Navbar Action Button (Outline Style) */
+.eshop-btn-navbar-action {
+  color: var(--primary-600);
+  border-color: var(--primary-500);
+  background-color: transparent;
+}
+.eshop-btn-navbar-action:hover,
+.eshop-btn-navbar-action:focus {
+  color: var(--neutral-50);
+  background-color: var(--primary-500);
+  border-color: var(--primary-500);
+}
+body.dark-mode .eshop-btn-navbar-action {
+  color: var(--neutral-200);
+  border-color: var(--neutral-300);
+}
+body.dark-mode .eshop-btn-navbar-action:hover,
+body.dark-mode .eshop-btn-navbar-action:focus {
+  color: var(--dark-bg-primary);
+  background-color: var(--neutral-200);
+  border-color: var(--neutral-200);
+}
+
+/* Custom Form Control (definitions for .eshop-form-control, .eshop-form-label, .eshop-invalid-feedback are now in App.css) */
+
+/* Navbar Search Input Specifics - This remains component-specific */
+.eshop-navbar-search-input {
+  /* any specific tweaks for navbar search if different from general eshop-form-control */
+}
+
+/* Ensure input-group in navbar does not wrap */
+.main-header .input-group {
+  flex-wrap: nowrap;
+}
+
+/* Custom Dropdown Menu */
+.eshop-dropdown-menu {
+  background-color: var(--neutral-0);
+  border: 1px solid rgba(var(--neutral-900-rgb), 0.15); /* Subtle border */
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(var(--neutral-900-rgb), 0.15);
+  padding: 0.5rem 0;
+  /* position, top, end, z-index etc are handled by inline styles or utility classes */
+}
+body.dark-mode .eshop-dropdown-menu {
+  background-color: var(--dark-bg-tertiary);
+  border-color: rgba(var(--neutral-50-rgb), 0.15);
+  box-shadow: 0 0.5rem 1rem rgba(var(--neutral-0-rgb), 0.1); /* Lighter shadow for dark */
+}
+
+.eshop-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  clear: both;
+  font-weight: 400;
+  color: var(--neutral-700);
+  text-align: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+}
+.eshop-dropdown-item:hover,
+.eshop-dropdown-item:focus {
+  color: var(--primary-600);
+  background-color: var(--neutral-100);
+}
+.eshop-dropdown-item.active,
+.eshop-dropdown-item:active {
+  color: var(--neutral-50);
+  background-color: var(--primary-500);
+}
+body.dark-mode .eshop-dropdown-item {
+  color: var(--neutral-100);
+}
+body.dark-mode .eshop-dropdown-item:hover,
+body.dark-mode .eshop-dropdown-item:focus {
+  color: var(--primary-500);
+  background-color: var(--dark-bg-secondary);
+}
+body.dark-mode .eshop-dropdown-item.active,
+body.dark-mode .eshop-dropdown-item:active {
+  color: var(--neutral-50);
+  background-color: var(--primary-600);
+}
+
+.eshop-navbar-dropdown-menu .small-text-muted {
+  color: var(--neutral-500);
+  border-bottom: 1px solid var(--neutral-200);
+  padding: 0.5rem 1rem; 
+  margin-bottom: 0.5rem;
+}
+body.dark-mode .eshop-navbar-dropdown-menu .small-text-muted {
+  color: var(--neutral-400);
+  border-bottom: 1px solid var(--neutral-700);
+}
+
+/* Eshop Text Error (for logout button) */
+/* .eshop-text-error base style is now global in App.css */
+/* Contextual hover/focus for dropdown items remains */
+.eshop-dropdown-item.eshop-text-error:hover,
+.eshop-dropdown-item.eshop-text-error:focus {
+  color: var(--neutral-50);
+  background-color: var(--error-500);
+}
+body.dark-mode .eshop-dropdown-item.eshop-text-error:hover,
+body.dark-mode .eshop-dropdown-item.eshop-text-error:focus {
+  background-color: var(--error-600);
+}
+
+/* Eshop Badge (base .eshop-badge is now in App.css) */
+/* .eshop-cart-badge rule removed as it now uses .eshop-badge-error */
+
+/* Eshop Modal (styles for content, header, body, footer, btn-close, backdrop are now in App.css) */
+
+/* Eshop Alert styles are now global in App.css */
+
+/* Eshop Form Label */
+.eshop-form-label {
+  margin-bottom: 0.5rem;
+  color: var(--neutral-700);
+  font-weight: 500;
+}
+body.dark-mode .eshop-form-label {
+  color: var(--neutral-200);
+}
+
+/* Eshop Invalid Feedback */
+.eshop-invalid-feedback {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: .875em;
+  color: var(--error-500);
+}
+body.dark-mode .eshop-invalid-feedback {
+  color: var(--error-500); /* Error color is usually vibrant enough for dark mode too */
+} 

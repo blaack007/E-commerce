@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../styles/ScrollToTop.css'; // Ensure this CSS file is imported
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,11 +34,11 @@ export default function ScrollToTop() {
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4 shadow"
+          className="eshop-btn eshop-btn-primary rounded-circle position-fixed bottom-0 end-0 m-4 shadow"
           style={{
             width: '45px',
             height: '45px',
-            transition: 'all 0.3s ease',
+            // transition: 'all 0.3s ease', // Removed, transitions handled by CSS
             zIndex: 1000,
             opacity: isVisible ? '1' : '0',
           }}

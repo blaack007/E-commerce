@@ -1,16 +1,19 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
 import { useLanguage } from '../context/LanguageContext';
+import '../styles/ProductModal.css';
 
 export default function ProductModal({ product, show, onClose }) {
   const dispatch = useDispatch();
   const { t } = useLanguage();
+  const cartSound = new Audio('/cart-sound.mp3');
 
   if (!show || !product) return null;
 
   const handleBackdropClick = (e) => {
-    if (e.target.classList.contains('modal') || e.target.classList.contains('modal-backdrop')) {
+    if (e.target.classList.contains('eshop-modal-container') || e.target.classList.contains('eshop-modal-backdrop')) {
       onClose();
     }
   };
@@ -30,6 +33,7 @@ export default function ProductModal({ product, show, onClose }) {
   const discountedPrice = (price - (price * discountPercentage) / 100).toFixed(2);
 
   const handleAddToCart = () => {
+    cartSound.play();
     dispatch(addToCart({
       id: product.id,
       title: product.title,
@@ -48,13 +52,13 @@ export default function ProductModal({ product, show, onClose }) {
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<i key={`full-${i}`} className="bi bi-star-fill text-warning"></i>);
+      stars.push(<i key={`full-${i}`} className="bi bi-star-fill eshop-text-warning"></i>);
     }
     if (hasHalfStar) {
-      stars.push(<i key="half" className="bi bi-star-half text-warning"></i>);
+      stars.push(<i key="half" className="bi bi-star-half eshop-text-warning"></i>);
     }
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<i key={`empty-${i}`} className="bi bi-star text-warning"></i>);
+      stars.push(<i key={`empty-${i}`} className="bi bi-star eshop-text-warning"></i>);
     }
 
     return stars;
@@ -64,31 +68,30 @@ export default function ProductModal({ product, show, onClose }) {
     return `category${category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`;
   };
 
-  return (
+  const modalContent = (
     <>
-      <div className="modal fade show" 
-           style={{ display: 'block' }}
+      <div className="eshop-modal-container fade show" 
            tabIndex="-1"
            onClick={handleBackdropClick}>
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">{title}</h5>
+        <div className="eshop-modal-dialog modal-dialog modal-lg">
+          <div className="eshop-modal-content">
+            <div className="eshop-modal-header">
+              <h5 className="eshop-modal-title">{title}</h5>
               <button 
                 type="button" 
-                className="btn-close" 
+                className="eshop-btn-close" 
                 onClick={onClose}
                 aria-label={t('close')}
               ></button>
             </div>
-            <div className="modal-body">
+            <div className="eshop-modal-body">
               <div className="row">
                 {/* Product Images */}
                 <div className="col-md-6 mb-3">
-                  <div id="productCarousel" className="carousel slide" data-bs-ride="carousel">
-                    <div className="carousel-inner">
+                  <div id="productCarousel" className="eshop-carousel carousel slide" data-bs-ride="carousel">
+                    <div className="eshop-carousel-inner carousel-inner">
                       {images.map((image, index) => (
-                        <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
+                        <div key={index} className={`eshop-carousel-item carousel-item ${index === 0 ? 'active' : ''}`}>
                           <img 
                             src={image} 
                             className="d-block w-100 rounded" 
@@ -108,12 +111,12 @@ export default function ProductModal({ product, show, onClose }) {
                     </div>
                     {images.length > 1 && (
                       <>
-                        <button className="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <button className="eshop-carousel-control-prev carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                          <span className="eshop-carousel-control-prev-icon carousel-control-prev-icon" aria-hidden="true"></span>
                           <span className="visually-hidden">{t('previous')}</span>
                         </button>
-                        <button className="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                          <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                        <button className="eshop-carousel-control-next carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                          <span className="eshop-carousel-control-next-icon carousel-control-next-icon" aria-hidden="true"></span>
                           <span className="visually-hidden">{t('next')}</span>
                         </button>
                       </>
@@ -124,35 +127,35 @@ export default function ProductModal({ product, show, onClose }) {
                 {/* Product Details */}
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <span className="h3 text-primary me-2">${discountedPrice}</span>
+                    <span className="h3 eshop-text-primary me-2">${discountedPrice}</span>
                     {discountPercentage > 0 && (
                       <>
-                        <span className="text-muted text-decoration-line-through">${price.toFixed(2)}</span>
-                        <span className="badge bg-danger ms-2">-{discountPercentage}%</span>
+                        <span className="eshop-text-muted text-decoration-line-through">${price.toFixed(2)}</span>
+                        <span className="eshop-badge eshop-badge-error ms-2">-{discountPercentage}%</span>
                       </>
                     )}
                   </div>
 
                   <div className="mb-3">
                     {renderStars()}
-                    <span className="ms-2 text-muted">({rating.toFixed(1)})</span>
+                    <span className="ms-2 eshop-text-muted">({rating.toFixed(1)})</span>
                   </div>
 
-                  <p className="text-muted mb-3">{description}</p>
+                  <p className="eshop-text-muted mb-3">{description}</p>
 
                   <div className="row mb-3">
                     <div className="col-6">
                       <p className="mb-1"><strong>{t('brand')}:</strong></p>
-                      <p className="text-muted">{brand}</p>
+                      <p className="eshop-text-muted">{brand}</p>
                     </div>
                     <div className="col-6">
                       <p className="mb-1"><strong>{t('category')}:</strong></p>
-                      <p className="text-muted">{t(getCategoryTranslationKey(category))}</p>
+                      <p className="eshop-text-muted">{t(getCategoryTranslationKey(category))}</p>
                     </div>
                     <div className="col-12">
                       <p className="mb-1"><strong>{t('availability')}:</strong></p>
                       <p>
-                        <span className={`badge ${stock > 0 ? 'bg-success' : 'bg-danger'}`}>
+                        <span className={`eshop-badge ${stock > 0 ? 'eshop-badge-success' : 'eshop-badge-error'}`}>
                           {stock > 0 ? `${t('inStock')} (${stock})` : t('outOfStock')}
                         </span>
                       </p>
@@ -161,17 +164,17 @@ export default function ProductModal({ product, show, onClose }) {
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
+            <div className="eshop-modal-footer">
               <button 
                 type="button" 
-                className="btn btn-secondary" 
+                className="eshop-btn eshop-btn-secondary" 
                 onClick={onClose}
               >
                 {t('close')}
               </button>
               <button 
                 type="button" 
-                className="btn btn-primary"
+                className="eshop-btn eshop-btn-primary"
                 onClick={handleAddToCart}
                 disabled={stock === 0}
               >
@@ -182,7 +185,11 @@ export default function ProductModal({ product, show, onClose }) {
           </div>
         </div>
       </div>
-      <div className="modal-backdrop fade show" onClick={onClose}></div>
+      <div className="eshop-modal-backdrop fade show" onClick={onClose}></div>
     </>
   );
-} 
+
+  const modalRoot = document.getElementById('modal-root') || document.body;
+
+  return ReactDOM.createPortal(modalContent, modalRoot);
+}

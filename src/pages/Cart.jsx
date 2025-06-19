@@ -34,7 +34,7 @@ const Cart = () => {
             {items.length === 0 ? (
               <div className="text-center py-4">
                 <h5>{t('emptyCart')}</h5>
-                <p className="text-muted">{t('emptyCart')}</p>
+                <p className="eshop-text-muted">{t('emptyCart')}</p>
               </div>
             ) : (
               items.map((item) => (
@@ -45,12 +45,12 @@ const Cart = () => {
                     </div>
                     <div className="col-md-5">
                       <h5 className="card-title">{item.title}</h5>
-                      <p className="text-muted">{t('category')}: {t(getCategoryTranslationKey(item.category))}</p>
+                      <p className="eshop-text-muted">{t('category')}: {t(getCategoryTranslationKey(item.category))}</p>
                     </div>
                     <div className="col-md-2">
                       <div className="input-group">
                         <button 
-                          className="btn btn-outline-secondary btn-sm" 
+                          className="eshop-btn eshop-btn-outline-secondary eshop-btn-sm"
                           type="button"
                           onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                         >
@@ -59,12 +59,12 @@ const Cart = () => {
                         <input 
                           style={{maxWidth: "100px"}}
                           type="text" 
-                          className="form-control form-control-sm text-center quantity-input" 
+                          className="eshop-form-control eshop-form-control-sm text-center quantity-input"
                           value={item.quantity}
                           readOnly
                         />
                         <button 
-                          className="btn btn-outline-secondary btn-sm" 
+                          className="eshop-btn eshop-btn-outline-secondary eshop-btn-sm"
                           type="button"
                           onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                         >
@@ -75,7 +75,7 @@ const Cart = () => {
                     <div className="col-md-2 text-end">
                       <p className="fw-bold">${(item.price * item.quantity).toFixed(2)}</p>
                       <button 
-                        className="btn btn-sm btn-outline-danger"
+                        className="eshop-btn eshop-btn-sm eshop-btn-outline-danger"
                         onClick={() => handleRemoveItem(item.id)}
                       >
                         <i className="bi bi-trash"></i> {t('remove')}
@@ -88,7 +88,7 @@ const Cart = () => {
             )}
           </div>
           <div className="text-start mb-4">
-            <Link to="/products" className="btn btn-outline-primary">
+            <Link to="/products" className="eshop-btn eshop-btn-outline-primary">
               <i className="bi bi-arrow-left me-2"></i>{t('allProducts')}
             </Link>
           </div>
@@ -114,7 +114,7 @@ const Cart = () => {
                 <strong>{t('total')}</strong>
                 <strong>${(totalAmount + shipping + tax).toFixed(2)}</strong>
               </div>
-              <button className="btn btn-primary w-100" disabled={items.length === 0}>
+              <button className="eshop-btn eshop-btn-primary w-100" disabled={items.length === 0}>
                 {t('checkout')}
               </button>
             </div>
@@ -123,8 +123,8 @@ const Cart = () => {
             <div className="card-body">
               <h5 className="card-title mb-3">{t('promoCode')}</h5>
               <div className="input-group mb-3">
-                <input type="text" className="form-control" placeholder={t('enterPromoCode')} />
-                <button className="btn btn-outline-secondary" type="button">{t('apply')}</button>
+                <input type="text" className="eshop-form-control" placeholder={t('enterPromoCode')} />
+                <button className="eshop-btn eshop-btn-outline-secondary" type="button">{t('apply')}</button>
               </div>
             </div>
           </div>

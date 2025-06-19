@@ -182,10 +182,10 @@ export default function Register() {
               <form onSubmit={handleSubmit} noValidate>
                 {/* Email */}
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email address</label>
+                  <label htmlFor="email" className="eshop-form-label">Email address</label>
                   <input
                     type="email"
-                    className={`form-control ${touched.email && errors.email ? 'is-invalid' : touched.email && !errors.email ? 'is-valid' : ''}`}
+                    className={`eshop-form-control ${touched.email && errors.email ? 'is-invalid' : touched.email && !errors.email ? 'is-valid' : ''}`}
                     id="email"
                     name="email"
                     value={formData.email}
@@ -194,16 +194,16 @@ export default function Register() {
                     required
                   />
                   {touched.email && errors.email && (
-                    <div className="invalid-feedback">{errors.email}</div>
+                    <div className="eshop-invalid-feedback">{errors.email}</div>
                   )}
                 </div>
 
                 {/* Name */}
                 <div className="mb-3">
-                  <label htmlFor="name" className="form-label">Full Name</label>
+                  <label htmlFor="name" className="eshop-form-label">Full Name</label>
                   <input
                     type="text"
-                    className={`form-control ${touched.name && errors.name ? 'is-invalid' : touched.name && !errors.name ? 'is-valid' : ''}`}
+                    className={`eshop-form-control ${touched.name && errors.name ? 'is-invalid' : touched.name && !errors.name ? 'is-valid' : ''}`}
                     id="name"
                     name="name"
                     value={formData.name}
@@ -212,16 +212,16 @@ export default function Register() {
                     required
                   />
                   {touched.name && errors.name && (
-                    <div className="invalid-feedback">{errors.name}</div>
+                    <div className="eshop-invalid-feedback">{errors.name}</div>
                   )}
                 </div>
 
                 {/* Username */}
                 <div className="mb-3">
-                  <label htmlFor="username" className="form-label">Username</label>
+                  <label htmlFor="username" className="eshop-form-label">Username</label>
                   <input
                     type="text"
-                    className={`form-control ${touched.username && errors.username ? 'is-invalid' : touched.username && !errors.username ? 'is-valid' : ''}`}
+                    className={`eshop-form-control ${touched.username && errors.username ? 'is-invalid' : touched.username && !errors.username ? 'is-valid' : ''}`}
                     id="username"
                     name="username"
                     value={formData.username}
@@ -230,16 +230,16 @@ export default function Register() {
                     required
                   />
                   {touched.username && errors.username && (
-                    <div className="invalid-feedback">{errors.username}</div>
+                    <div className="eshop-invalid-feedback">{errors.username}</div>
                   )}
                 </div>
 
                 {/* Password */}
                 <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
+                  <label htmlFor="password" className="eshop-form-label">Password</label>
                   <input
                     type="password"
-                    className={`form-control ${touched.password && errors.password ? 'is-invalid' : touched.password && !errors.password ? 'is-valid' : ''}`}
+                    className={`eshop-form-control ${touched.password && errors.password ? 'is-invalid' : touched.password && !errors.password ? 'is-valid' : ''}`}
                     id="password"
                     name="password"
                     value={formData.password}
@@ -248,16 +248,19 @@ export default function Register() {
                     required
                   />
                   {touched.password && errors.password && (
-                    <div className="invalid-feedback">{errors.password}</div>
+                    <div className="eshop-invalid-feedback">{errors.password}</div>
+                  )}
+                  {touched.password && !errors.password && passwordRegex.test(formData.password) && (
+                    <div className="eshop-valid-feedback">Password strength is good.</div>
                   )}
                 </div>
 
                 {/* Confirm Password */}
                 <div className="mb-4">
-                  <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                  <label htmlFor="confirmPassword" className="eshop-form-label">Confirm Password</label>
                   <input
                     type="password"
-                    className={`form-control ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : touched.confirmPassword && !errors.confirmPassword ? 'is-valid' : ''}`}
+                    className={`eshop-form-control ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : touched.confirmPassword && !errors.confirmPassword && formData.confirmPassword ? 'is-valid' : ''}`}
                     id="confirmPassword"
                     name="confirmPassword"
                     value={formData.confirmPassword}
@@ -266,12 +269,12 @@ export default function Register() {
                     required
                   />
                   {touched.confirmPassword && errors.confirmPassword && (
-                    <div className="invalid-feedback">{errors.confirmPassword}</div>
+                    <div className="eshop-invalid-feedback">{errors.confirmPassword}</div>
                   )}
                 </div>
 
-                <button type="submit" className="btn btn-primary w-100">
-                  Register
+                <button type="submit" className="eshop-btn eshop-btn-primary w-100">
+                  Create Account
                 </button>
               </form>
             </div>

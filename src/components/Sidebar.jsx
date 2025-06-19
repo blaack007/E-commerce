@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../apis/config';
 import { useTheme } from '../context/useTheme';
 import { useLanguage } from '../context/LanguageContext';
+import '../styles/Sidebar.css';
 
 export default function Sidebar({ onCategorySelect, selectedCategory }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line no-unused-vars
   const { darkMode } = useTheme();
   const { t } = useLanguage();
 
@@ -35,16 +37,16 @@ export default function Sidebar({ onCategorySelect, selectedCategory }) {
   }
 
   return (
-    <div className="card shadow-sm border-0">
-      <div className={`card-header border-bottom border-2 py-3 ${darkMode ? 'bg-dark text-light' : 'bg-white'}`}>
+    <div className="sidebar-content-wrapper-ltr card shadow-sm border-0">
+      <div className={`card-header py-3`}>
         <h5 className="mb-0 fw-bold">
           <i className="bi bi-grid-3x3-gap-fill me-2"></i>
           {t('categories')}
         </h5>
       </div>
-      <div className="list-group list-group-flush">
+      <div className="sidebar-list-group list-group list-group-flush">
         <button
-          className={`list-group-item list-group-item-action d-flex align-items-center gap-2 ${!selectedCategory ? 'active fw-bold' : ''}`}
+          className={`list-group-item d-flex align-items-center gap-2 ${!selectedCategory ? 'active fw-bold' : ''}`}
           onClick={() => onCategorySelect(null)}
         >
           <i className="bi bi-collection"></i>
@@ -53,7 +55,7 @@ export default function Sidebar({ onCategorySelect, selectedCategory }) {
         {categories.map((category) => (
           <button
             key={category}
-            className={`list-group-item list-group-item-action d-flex align-items-center gap-2 ${selectedCategory === category ? 'active fw-bold' : ''}`}
+            className={`list-group-item d-flex align-items-center gap-2 ${selectedCategory === category ? 'active fw-bold' : ''}`}
             onClick={() => onCategorySelect(category)}
           >
             <i className={`bi bi-${getCategoryIcon(category)}`}></i>

@@ -1,12 +1,11 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
-
-// Lazy load the ProductModal component
-const ProductModal = lazy(() => import('./ProductModal'));
+import ProductModal from './ProductModal';
+import '../styles/ProductCard.css'; // Import the CSS file
 
 // Loading component for modal
 const ModalLoadingSpinner = () => {
@@ -28,16 +27,20 @@ export default function ProductCard(props) {
   const { data } = props;
   const [imageLoading, setImageLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
   const { darkMode } = useTheme();
   const { t } = useLanguage();
   const dispatch = useDispatch();
+  const cartSound = new Audio('/cart-sound.mp3');
 
   const handleNavigateToDetails = (productId) => {
     navigate(`/products/${productId}`);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    cartSound.play();
     dispatch(addToCart({
       id: data.id,
       title: data.title,
@@ -45,6 +48,19 @@ export default function ProductCard(props) {
       image: data.thumbnail,
       category: data.category
     }));
+    
+    const button = e.currentTarget;
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-check-circle me-1"></i>' + t('added');
+    // Temporarily change classes for feedback, assuming btn-success is defined elsewhere or via Bootstrap
+    button.classList.remove('product-card-add-btn'); 
+    button.classList.add('btn-success');
+    
+    setTimeout(() => {
+      button.innerHTML = originalContent;
+      button.classList.remove('btn-success');
+      button.classList.add('product-card-add-btn');
+    }, 1500);
   };
   
   function renderStars(rating) {
@@ -53,105 +69,120 @@ export default function ProductCard(props) {
     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
-    // Full stars
     for (let i = 0; i < fullStars; i++) {
       stars.push(<i key={`full-${i}`} className="bi bi-star-fill text-warning"></i>);
     }
-
-    // Half star (if needed)
     if (hasHalfStar) {
       stars.push(<i key="half" className="bi bi-star-half text-warning"></i>);
     }
-
-    // Empty stars
     for (let i = 0; i < emptyStars; i++) {
       stars.push(<i key={`empty-${i}`} className="bi bi-star text-warning"></i>);
     }
-
     return stars;
   };
 
+  // Construct class names dynamically
+  const cardClassName = `product-card card h-100 ${isHovered ? 'hovered' : ''} ${darkMode ? 'dark-mode-card' : ''}`;
+  const imageClassName = `product-card-image ${imageLoading ? 'image-loading' : ''}`;
+  const stockBadgeClassName = `product-card-stock-badge ${data.stock > 0 ? 'stock-badge-in-stock' : 'stock-badge-out-of-stock'}`;
+  const viewButtonClassName = `btn btn-outline-primary flex-fill product-card-btn product-card-view-btn`;
+  const addButtonClassName = `btn flex-fill product-card-btn product-card-add-btn`;
+
   return (
     <>
-      <div className="card h-100 border-opacity-25">
+      <div 
+        className={cardClassName}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div 
-          className="position-relative" 
-          style={{ height: '280px', overflow: 'hidden', cursor: 'pointer' }}
+          className="product-card-image-container"
           onClick={() => setShowModal(true)}
         >
           {imageLoading && (
-            <div className={`position-absolute w-100 h-100 d-flex justify-content-center align-items-center ${darkMode ? 'bg-dark' : 'bg-light'}`}>
+            <div className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center">
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">{t('loading')}</span>
               </div>
             </div>
           )}
-          <div className="w-100 h-100 d-flex align-items-center justify-content-center bg-light bg-opacity-10">
-            <img
-              src={data.thumbnail}
-              className={`${imageLoading ? 'opacity-0' : 'opacity-100'}`}
-              alt={data.title}
-              style={{ 
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                padding: '1rem',
-                transition: 'all 0.3s ease-in-out',
-                transform: 'scale(0.95)'
-              }}
-              onLoad={() => setImageLoading(false)}
-              onMouseEnter={(e) => e.target.style.transform = 'scale(1)'}
-              onMouseLeave={(e) => e.target.style.transform = 'scale(0.95)'}
-            />
+          
+          <div className="product-card-category-badge">
+            {data.category}
           </div>
-          {/* Stock Status Badge */}
-          <div className="position-absolute top-0 end-0 m-2">
-            <span className={`badge ${data.stock > 0 ? 'bg-success' : 'bg-danger'}`}>
-              {data.stock > 0 ? t('inStock') : t('outOfStock')}
-            </span>
+          
+          <div className={stockBadgeClassName}>
+            {data.stock > 0 ? t('inStock') : t('outOfStock')}
           </div>
+          
+          <img
+            src={data.thumbnail}
+            alt={data.title}
+            className={imageClassName}
+            onLoad={() => setImageLoading(false)}
+          />
+          
+          {isHovered && (
+             <div className="product-card-image-overlay">
+                <div className="text-white text-center">
+                <i className="bi bi-zoom-in fs-1 mb-2"></i>
+                <p className="mb-0 fw-semibold">{t('quickView')}</p>
+                </div>
+            </div>
+          )}
         </div>
-        <div className="card-body d-flex flex-column">
-          <h5 className="card-title text-truncate" title={data.title}>{data.title}</h5>
-          <p className="card-text flex-grow-1 text-opacity-75" style={{
-            display: '-webkit-box',
-            WebkitLineClamp: '3',
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}>{data.description}</p>
-          <div className="mt-auto">
-            <div className="d-flex justify-content-between align-items-center mb-2">
+        
+        <div className="product-card-body">
+          <h5 className="product-card-title" title={data.title}>
+            {data.title}
+          </h5>
+          
+          <p className="product-card-description">
+            {data.description}
+          </p>
+          
+          <div className="product-card-rating">
+            <div className="d-flex">
+              {renderStars(data.rating)}
+            </div>
+            <span className="text-muted small">({data.rating.toFixed(1)})</span>
+          </div>
+          
+          <div className="product-card-price-section">
+            <div className="d-flex align-items-center justify-content-between">
               <div>
-                <span className="h5 mb-0 text-primary">${data.price}</span>
+                <span className="product-card-price">${data.price}</span>
                 {data.discountPercentage > 0 && (
-                  <small className="text-muted ms-2">
-                    <s>${(data.price / (1 - data.discountPercentage / 100)).toFixed(2)}</s>
-                  </small>
+                  <div>
+                    <small className="product-card-original-price">
+                      ${(data.price / (1 - data.discountPercentage / 100)).toFixed(2)}
+                    </small>
+                    <span className="badge bg-accent ms-2">
+                      -{Math.round(data.discountPercentage)}%
+                    </span>
+                  </div>
                 )}
               </div>
-              <div>
-                {renderStars(data.rating)}
-                <small className="text-muted ms-1">({data.rating.toFixed(1)})</small>
-              </div>
             </div>
-            <div className="d-flex gap-2">
-              <button 
-                className="btn btn-outline-primary btn-sm flex-grow-1"
-                onClick={() => handleNavigateToDetails(data.id)}
-              >
-                <i className="bi bi-eye me-1"></i>
-                {t('viewDetails')}
-              </button>
-              <button 
-                className={`btn btn-primary btn-sm flex-grow-1 ${data.stock === 0 ? 'disabled' : ''}`}
-                disabled={data.stock === 0}
-                onClick={handleAddToCart}
-              >
-                <i className="bi bi-cart-plus me-1"></i>
-                {t('addToCart')}
-              </button>
-            </div>
+          </div>
+          
+          <div className="product-card-button-group">
+            <button 
+              className={viewButtonClassName}
+              onClick={() => handleNavigateToDetails(data.id)}
+            >
+              <i className="bi bi-eye me-2"></i>
+              {t('viewDetails')}
+            </button>
+            
+            <button 
+              className={addButtonClassName}
+              disabled={data.stock === 0}
+              onClick={handleAddToCart}
+            >
+              <i className={`bi ${data.stock === 0 ? 'bi-x-circle' : 'bi-cart-plus'} me-2`}></i>
+              {data.stock === 0 ? t('outOfStock') : t('addToCart')}
+            </button>
           </div>
         </div>
       </div>

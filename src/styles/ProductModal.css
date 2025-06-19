@@ -1,0 +1,191 @@
+/* src/styles/ProductModal.css */
+
+/* Eshop Modal Base Container (for backdrop click) - Specific to ProductModal for now */
+.eshop-modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050; /* Higher than navbar */
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+  display: flex; /* Added for centering */
+  align-items: center; /* Added for vertical centering */
+  justify-content: center; /* Added for horizontal centering */
+  padding: 0.5rem; /* Added for spacing from viewport edges */
+}
+
+/* Eshop Modal Dialog (structural, sizing from Bootstrap modal-lg is kept via modal-dialog class) - Specific to ProductModal for now */
+.eshop-modal-dialog {
+  /* Default modal-dialog styles from bootstrap provide centering and sizing */
+  margin: 0; /* Reset margin to allow flex parent to center */
+  /* max-width will be handled by .modal-lg from Bootstrap if its CSS is loaded */
+  /* We can add it here if needed: e.g., max-width: 800px for modal-lg */
+  width: 100%; /* Ensure it can take up available space up to max-width */
+}
+
+/* Specific max-width for modal-lg, as Bootstrap might not be fully loaded */
+@media (min-width: 992px) {
+  .eshop-modal-dialog.modal-lg {
+    max-width: 800px;
+  }
+}
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .eshop-modal-dialog:not(.modal-lg):not(.modal-sm) { /* Default modal size */
+    max-width: 500px;
+  }
+}
+
+/* Eshop Text Utilities */
+/* Definitions for .eshop-text-primary, .eshop-text-warning, .eshop-text-muted are now global in App.css */
+
+/* Eshop Badge (base .eshop-badge and color variants .eshop-badge-error, .eshop-badge-success are now in App.css) */
+
+/* Product Specific Styles within Modal */
+.eshop-modal-body .h3.eshop-text-primary {
+  font-size: 1.75rem; /* Example size */
+  font-weight: 600;
+}
+
+/* Eshop Carousel Styles */
+.eshop-carousel {
+  position: relative;
+  /* Base styling for the carousel container if needed */
+}
+
+.eshop-carousel-inner {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--bs-border-radius-lg, 0.5rem); /* Match image rounding if desired */
+}
+
+.eshop-carousel-item {
+  display: none;
+  position: relative;
+  width: 100%;
+  margin-right: -100%;
+  backface-visibility: hidden;
+  transition: transform .6s ease-in-out; /* Matches Bootstrap slide transition */
+}
+
+.eshop-carousel-item.active,
+.eshop-carousel-item-next,
+.eshop-carousel-item-prev {
+  display: block;
+}
+
+/* No specific styling for .carousel-item-next, .carousel-item-prev from Bootstrap's CSS perspective */
+/* .carousel-item-next:not(.carousel-item-start), .active.carousel-item-end */
+/* .carousel-item-prev:not(.carousel-item-end), .active.carousel-item-start */
+/* These are primarily for JS slide direction and animation */
+
+/* Carousel Controls (Prev/Next Buttons) */
+.eshop-carousel-control-prev,
+.eshop-carousel-control-next {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15%;
+  padding: 0;
+  color: var(--neutral-0); /* Text color for screen reader text, icons are SVG */
+  text-align: center;
+  background: none;
+  border: 0;
+  opacity: 0.65;
+  transition: opacity .15s ease;
+}
+
+.eshop-carousel-control-prev:hover,
+.eshop-carousel-control-prev:focus,
+.eshop-carousel-control-next:hover,
+.eshop-carousel-control-next:focus {
+  color: var(--neutral-0);
+  text-decoration: none;
+  outline: 0;
+  opacity: 0.9;
+}
+
+.eshop-carousel-control-prev {
+  left: 0;
+}
+
+.eshop-carousel-control-next {
+  right: 0;
+}
+
+/* Custom Themed Carousel Control Icons */
+.eshop-carousel-control-prev-icon,
+.eshop-carousel-control-next-icon {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: 100% 100%;
+}
+
+.eshop-carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+}
+
+.eshop-carousel-control-next-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+/* Dark Mode Carousel Control Icons - if they need to be different */
+body.dark-mode .eshop-carousel-control-prev-icon {
+  /* fill='%23fff' is white, which is fine on dark mode too. If you need a different color: */
+  /* background-image: url("data:image/svg+xml,...fill='%23000'..."); */
+}
+
+body.dark-mode .eshop-carousel-control-next-icon {
+  /* fill='%23fff' is white, which is fine on dark mode too. */
+}
+
+/* Carousel Indicators (if you add them later) */
+/*
+.eshop-carousel-indicators {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  margin-right: 15%;
+  margin-bottom: 1rem;
+  margin-left: 15%;
+  list-style: none;
+}
+
+.eshop-carousel-indicators [data-bs-target] {
+  box-sizing: content-box;
+  flex: 0 1 auto;
+  width: 30px;
+  height: 3px;
+  padding: 0;
+  margin-right: 3px;
+  margin-left: 3px;
+  text-indent: -999px;
+  cursor: pointer;
+  background-color: var(--primary-500); 
+  background-clip: padding-box;
+  border: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  opacity: .5;
+  transition: opacity .6s ease;
+}
+
+.eshop-carousel-indicators .active {
+  opacity: 1;
+}
+*/ 
